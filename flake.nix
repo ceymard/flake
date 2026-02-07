@@ -26,14 +26,16 @@
 
       # nixGL derivations (launchers)
       nixGLPkgs = nixgl.packages.${system};
+
+      username = builtins.getEnv "USER";
     in {
-      homeConfigurations.u1214055 = home-manager.lib.homeManagerConfiguration {
+      homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
         modules = [
           {
-            home.username = "u1214055";
-            home.homeDirectory = "/home/u1214055";
+            home.username = username;
+            home.homeDirectory = "/home/" + username;
             home.stateVersion = "25.11";
 
             home.packages = with pkgs; [
