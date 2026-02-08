@@ -13,9 +13,14 @@
       url = "github:nix-community/nixGL";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    dank-material-shell = {
+      url = "github:AvengeMedia/DankMaterialShell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixgl, ... }:
+  outputs = { self, nixpkgs, home-manager, nixgl, dank-material-shell, ... }:
     let
       system = "x86_64-linux";
 
@@ -36,7 +41,14 @@
           {
             home.username = username;
             home.homeDirectory = "/home/" + username;
-            home.stateVersion = "25.11";
+            home.stateVersion = "26.05";
+
+            
+# Create a symlink so systemd can find the units
+  home.activation.linkSystemdUnits = home-manager.lib.hm.dag.entryAfter ["writeBoundary"] ''
+    $DRY_RUN_CMD mkdir -p $HOME/.config/systemd/user
+    $DRY_RUN_CMD ln -sf $HOME/.nix-profile/lib/systemd/user/* $HOME/.config/systemd/user/
+  '';
 
             home.packages = with pkgs; [
               git
@@ -48,12 +60,22 @@
               openssh # we want something modern
 
               chezmoi helix
+              fish
 
+              alacritty
+
+              # graphical stuff
+              niri xdg-desktop-portal-gnome 
+              
               # nixGL launchers (NOT functions)
               nixGLPkgs.nixGLIntel
-              nixGLPkgs.nixGLNvidia
+              # nixGLPkgs.nixGLNvidia
               nixGLPkgs.nixVulkanIntel
-              nixGLPkgs.nixVulkanNvidia
+              # nixGLPkgs.nixVulkanNvidia
+
+              # Add DankMaterialShell package
+              dank-material-shell.packages.${system}.default
+              dank-material-shell.packages.${system}.quickshell
             ];
 
             programs.zsh.enable = true;
@@ -61,11 +83,13 @@
 
             # Make nixGL launchers available in PATH
             home.sessionPath = [
-              "${nixGLPkgs.nixGLIntel}/bin"
-              "${nixGLPkgs.nixGLNvidia}/bin"
+              # "${nixGLPkgs.nixGLIntel}/bin"
+              # "${nixGLPkgs.nixGLNvidia}/bin"
             ];
           }
         ];
       };
     };
+
+  
 }

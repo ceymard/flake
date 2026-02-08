@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Niri (Home Manager)
+Comment=Niri scrollable-tiling Wayland compositor with nixGL
+Exec=/home/u1214055/nix/niri-wrapped
+Type=Application
+DesktopNames=niri
