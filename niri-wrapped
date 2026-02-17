@@ -29,5 +29,6 @@ systemctl --user import-environment PATH XDG_DATA_DIRS XDG_SESSION_TYPE XDG_CURR
 #    exec nixGLNvidia niri-session "$@"
 #else
 echo "Using nixGLIntel"
+# exec nixGLIntel niri-session "$@"
 exec nixGLIntel niri-session "$@"
 #fi
