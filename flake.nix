@@ -53,11 +53,6 @@ EOF
         };
       
       wrapIntel = wrapWithNixGL nixGLPkgs.nixGLIntel;
-
-
-
-
-
       username = builtins.getEnv "USER";
 
     in {
@@ -83,7 +78,13 @@ EOF
               (wrapIntel epiphany "epiphany")
               (wrapIntel ungoogled-chromium "chromium")
               (wrapIntel niri "niri")
+              (wrapIntel alacritty "alacritty")
+              (wrapIntel brave "brave")
               xwayland-satellite
+              
+              # Add DankMaterialShell package
+              (wrapIntel dank-material-shell.packages.${system}.default "dms")
+              dank-material-shell.packages.${system}.quickshell
 
               go rustc cargo
               goodvibes
@@ -123,8 +124,6 @@ EOF
       done
     fi
 
-    # Reload systemd user daemon
-    systemctl --user daemon-reload
   '';
 };
           }
