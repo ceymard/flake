@@ -32,7 +32,7 @@
       nixGLPkgs = nixgl.packages.${system};
 
       # Correct wrapper for nix-community/nixGL
-      wrapWithNixGL = nixGL: pkg: 
+      wrapWithNixGL = nixGL: pkg: executables:
         pkgs.symlinkJoin {
           name = "${pkg.pname or pkg.name}-nixgl";
           paths = [ pkg ];
@@ -40,10 +40,15 @@
           buildInputs = [ pkgs.makeWrapper ];
 
           postBuild = ''
-            for b in $(ls $out/bin); do
+            for b in ${executables}; do
               mv "$out/bin/$b" "$out/bin/$b-real"
-              makeWrapper "$out/bin/$b-real" "$out/bin/$b" --run "exec ${nixGL}/bin/nixGLIntel $out/bin/$b-real"
+              cat > "$out/bin/$b" <<EOF 
+#!/usr/bin/env sh
+exec ${nixGL}/bin/nixGLIntel $out/bin/$b-real "\$@"
+EOF
+            chmod +x "$out/bin/$b"
             done
+            
           '';
         };
       
@@ -75,8 +80,10 @@
               openssh
 
               # Wrapped with nixGL
-              (wrapIntel epiphany)
-              (wrapIntel ungoogled-chromium)
+              (wrapIntel epiphany "epiphany")
+              (wrapIntel ungoogled-chromium "chromium")
+              (wrapIntel niri "niri")
+              xwayland-satellite
 
               go rustc cargo
               goodvibes
@@ -96,6 +103,30 @@
             home.sessionPath = [
               # optional
             ];
+            
+            home.activation.syncUserUnits = {
+  after = [ "writeBoundary" ];
+  before = [ "reloadSystemd" ];
+  data = ''
+    src="$HOME/.nix-profile/lib/systemd/user"
+    dst="$HOME/.config/systemd/user"
+
+    mkdir -p "$dst"
+
+    # Remove broken symlinks in target
+    find "$dst" -xtype l -delete
+
+    # Create/update symlinks
+    if [ -d "$src" ]; then
+      for unit in "$src"/*; do
+        ln -sf "$unit" "$dst/$(basename "$unit")"
+      done
+    fi
+
+    # Reload systemd user daemon
+    systemctl --user daemon-reload
+  '';
+};
           }
         ];
       };
