@@ -31,6 +31,28 @@
 
       nixGLPkgs = nixgl.packages.${system};
 
+      # Correct wrapper for nix-community/nixGL
+      wrapWithNixGL = nixGL: pkg: 
+        pkgs.symlinkJoin {
+          name = "${pkg.pname or pkg.name}-nixgl";
+          paths = [ pkg ];
+
+          buildInputs = [ pkgs.makeWrapper ];
+
+          postBuild = ''
+            for b in $(ls $out/bin); do
+              mv "$out/bin/$b" "$out/bin/$b-real"
+              makeWrapper "$out/bin/$b-real" "$out/bin/$b" --run "exec ${nixGL}/bin/nixGLIntel $out/bin/$b-real"
+            done
+          '';
+        };
+      
+      wrapIntel = wrapWithNixGL nixGLPkgs.nixGLIntel;
+
+
+
+
+
       username = builtins.getEnv "USER";
 
     in {
@@ -50,10 +72,12 @@
               jq
               curl
               wget
-              openssh # we want something modern
+              openssh
 
-              epiphany # debug webkit
-              ungoogled-chromium
+              # Wrapped with nixGL
+              (wrapIntel epiphany)
+              (wrapIntel ungoogled-chromium)
+
               go rustc cargo
               goodvibes
 
@@ -61,6 +85,7 @@
               fish
               meson cmake
 
+              # Provide nixGL binaries
               nixGLPkgs.nixGLIntel
               nixGLPkgs.nixVulkanIntel
             ];
@@ -68,15 +93,12 @@
             programs.zsh.enable = true;
             programs.git.enable = true;
 
-            # Make nixGL launchers available in PATH
             home.sessionPath = [
-              # "${nixGLPkgs.nixGLIntel}/bin"
-              # "${nixGLPkgs.nixGLNvidia}/bin"
+              # optional
             ];
           }
         ];
       };
     };
-
-  
 }
+
