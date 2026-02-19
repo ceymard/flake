@@ -80,6 +80,9 @@ EOF
               (wrapIntel niri "niri")
               (wrapIntel alacritty "alacritty")
               (wrapIntel brave "brave")
+              (wrapIntel microsoft-edge "microsoft-edge")
+              (wrapIntel code-cursor "cursor")
+              cursor-cli
               xwayland-satellite
               
               # Add DankMaterialShell package
@@ -88,6 +91,7 @@ EOF
 
               go rustc cargo
               goodvibes
+              pgcli
 
               chezmoi helix
               fish
