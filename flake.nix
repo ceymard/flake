@@ -74,6 +74,7 @@ EOF
               wget
               openssh
 
+              nodejs_24
               # Wrapped with nixGL
               (wrapIntel epiphany "epiphany")
               (wrapIntel ungoogled-chromium "chromium")
