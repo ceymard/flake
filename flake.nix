@@ -73,6 +73,7 @@ EOF
               curl
               wget
               openssh
+              gawk
 
               nodejs_24
               # Wrapped with nixGL
@@ -83,6 +84,7 @@ EOF
               (wrapIntel brave "brave")
               #(wrapIntel microsoft-edge "microsoft-edge")
               (wrapIntel code-cursor "cursor")
+              (wrapIntel wpsoffice "wps")
               cursor-cli
               xwayland-satellite
               
@@ -105,6 +107,11 @@ EOF
 
             programs.zsh.enable = true;
             programs.git.enable = true;
+
+            fonts.fontconfig = {
+              enable = true;
+            };
+            
 
             home.sessionPath = [
               # optional
