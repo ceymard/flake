@@ -81,7 +81,7 @@ EOF
               (wrapIntel niri "niri")
               (wrapIntel alacritty "alacritty")
               (wrapIntel brave "brave")
-              (wrapIntel microsoft-edge "microsoft-edge")
+              #(wrapIntel microsoft-edge "microsoft-edge")
               (wrapIntel code-cursor "cursor")
               cursor-cli
               xwayland-satellite
