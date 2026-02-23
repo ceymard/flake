@@ -74,6 +74,7 @@ EOF
               wget
               openssh
               gawk
+              btop
 
               nodejs_24
               # Wrapped with nixGL
