@@ -75,6 +75,7 @@ EOF
               openssh
               gawk
               btop
+              uv
 
               nodejs_24
               # Wrapped with nixGL
@@ -92,6 +93,7 @@ EOF
               # Add DankMaterialShell package
               (wrapIntel dank-material-shell.packages.${system}.default "dms")
               dank-material-shell.packages.${system}.quickshell
+              dgop # network monitor
 
               go rustc cargo
               goodvibes
