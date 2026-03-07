@@ -94,6 +94,9 @@ EOF
               (wrapIntel dank-material-shell.packages.${system}.default "dms")
               dank-material-shell.packages.${system}.quickshell
               dgop # network monitor
+              cava # audio visualization
+              matugen # auto theme
+              power-profiles-daemon
 
               go rustc cargo
               goodvibes
