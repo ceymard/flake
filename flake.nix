@@ -96,7 +96,6 @@ EOF
               dgop # network monitor
               cava # audio visualization
               matugen # auto theme
-              power-profiles-daemon
 
               go rustc cargo
               goodvibes
