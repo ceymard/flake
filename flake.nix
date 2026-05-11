@@ -33,6 +33,9 @@
 
       # Correct wrapper for nix-community/nixGL
       wrapWithNixGL = nixGL: pkg: executables:
+        let
+          nixGLExec = builtins.elemAt (builtins.attrNames (builtins.readDir "${nixGL}/bin")) 0;
+        in
         pkgs.symlinkJoin {
           name = "${pkg.pname or pkg.name}-nixgl";
           paths = [ pkg ];
@@ -44,7 +47,7 @@
               mv "$out/bin/$b" "$out/bin/$b-real"
               cat > "$out/bin/$b" <<EOF 
 #!/usr/bin/env sh
-exec ${nixGL}/bin/nixGLIntel $out/bin/$b-real "\$@"
+exec ${nixGL}/bin/${nixGLExec} $out/bin/$b-real "\$@"
 EOF
             chmod +x "$out/bin/$b"
             done
@@ -53,6 +56,7 @@ EOF
         };
       
       wrapIntel = wrapWithNixGL nixGLPkgs.nixGLIntel;
+      wrapNvidia = wrapWithNixGL nixGLPkgs.nixGLNvidia;
       username = builtins.getEnv "USER";
 
     in {
@@ -83,10 +87,8 @@ EOF
               (wrapIntel ungoogled-chromium "chromium")
               (wrapIntel niri "niri")
               (wrapIntel alacritty "alacritty")
-              (wrapIntel brave "brave")
+              #(wrapIntel brave "brave")
               #(wrapIntel microsoft-edge "microsoft-edge")
-              (wrapIntel code-cursor "cursor")
-              (wrapIntel wpsoffice "wps")
               cursor-cli
               xwayland-satellite
               
@@ -100,14 +102,19 @@ EOF
               go rustc cargo
               goodvibes
               pgcli
+              ripgrep-all
+              ripgrep
 
               chezmoi helix
               fish
               meson cmake
 
+
               # Provide nixGL binaries
               nixGLPkgs.nixGLIntel
               nixGLPkgs.nixVulkanIntel
+              nixGLPkgs.nixGLNvidia
+              nixGLPkgs.nixVulkanNvidia
             ];
 
             programs.zsh.enable = true;
