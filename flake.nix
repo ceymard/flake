@@ -27,6 +27,7 @@
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
+        #overlays = [nixgl.overlay];
       };
 
       nixGLPkgs = nixgl.packages.${system};
@@ -47,6 +48,7 @@
               mv "$out/bin/$b" "$out/bin/$b-real"
               cat > "$out/bin/$b" <<EOF 
 #!/usr/bin/env sh
+unset LD_LIBRARY_PATH # just in case
 exec ${nixGL}/bin/${nixGLExec} $out/bin/$b-real "\$@"
 EOF
             chmod +x "$out/bin/$b"
@@ -72,6 +74,7 @@ EOF
             home.packages = with pkgs; [
               git
               tmux
+              foot
               fzf
               jq
               curl
@@ -80,30 +83,42 @@ EOF
               gawk
               btop
               uv
+              just
 
               nodejs_24
               # Wrapped with nixGL
               (wrapIntel epiphany "epiphany")
               (wrapIntel ungoogled-chromium "chromium")
-              (wrapIntel niri "niri")
-              (wrapIntel alacritty "alacritty")
+              niri
+              # (wrapIntel niri "niri")
+              (wrapNvidia niri "niri")
+              #(wrapIntel alacritty "alacritty")
+              (wrapIntel flameshot "flameshot")
+              (wrapIntel grim "grim")
+              (wrapIntel satty "satty")
+              (wrapIntel slurp "slurp")
               #(wrapIntel brave "brave")
               #(wrapIntel microsoft-edge "microsoft-edge")
               cursor-cli
-              xwayland-satellite
-              
+              (wrapIntel xwayland-satellite "xwayland-satellite") # compilé à la main finalement
+              xwayland
+                           
               # Add DankMaterialShell package
               (wrapIntel dank-material-shell.packages.${system}.default "dms")
-              dank-material-shell.packages.${system}.quickshell
+              (wrapIntel quickshell "quickshell")
+              (wrapIntel inkscape "inkscape")
+              #dank-material-shell.packages.${system}.quickshell
               dgop # network monitor
               cava # audio visualization
               matugen # auto theme
 
-              go rustc cargo
+              go rustc cargo tinygo
               goodvibes
               pgcli
               ripgrep-all
               ripgrep
+
+              input-leap
 
               chezmoi helix
               fish
@@ -113,8 +128,8 @@ EOF
               # Provide nixGL binaries
               nixGLPkgs.nixGLIntel
               nixGLPkgs.nixVulkanIntel
-              nixGLPkgs.nixGLNvidia
-              nixGLPkgs.nixVulkanNvidia
+              #nixGLPkgs.nixGLNvidia
+              #nixGLPkgs.nixVulkanNvidia
             ];
 
             programs.zsh.enable = true;
