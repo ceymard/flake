@@ -1,3 +1,4 @@
 #!/usr/bin/bash
 export NIXPKGS_ALLOW_UNFREE=1
-nix run home-manager/master -- switch --flake ~/nix#u1214055 --impure "$@"
+nix --extra-experimental-features "nix-command flakes" run home-manager/master -- switch --extra-experimental-features "nix-command flakes" --flake ~/nix#u1214055 --impure "$@"
+

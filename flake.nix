@@ -14,13 +14,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    dank-material-shell = {
-      url = "github:AvengeMedia/DankMaterialShell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = { self, nixpkgs, home-manager, dank-material-shell, nixgl, ... }:
+  outputs = { self, nixpkgs, home-manager, nixgl, ... }:
     let
       system = "x86_64-linux";
 
@@ -84,14 +80,16 @@ EOF
               btop
               uv
               just
+              starship
+              fuzzel
 
               nodejs_24
               # Wrapped with nixGL
               (wrapIntel epiphany "epiphany")
               (wrapIntel ungoogled-chromium "chromium")
-              niri
+              # niri
               # (wrapIntel niri "niri")
-              (wrapNvidia niri "niri")
+              #(wrapNvidia niri "niri")
               #(wrapIntel alacritty "alacritty")
               (wrapIntel flameshot "flameshot")
               (wrapIntel grim "grim")
@@ -99,15 +97,16 @@ EOF
               (wrapIntel slurp "slurp")
               #(wrapIntel brave "brave")
               #(wrapIntel microsoft-edge "microsoft-edge")
+              firefox
               cursor-cli
               (wrapIntel xwayland-satellite "xwayland-satellite") # compilé à la main finalement
               xwayland
                            
               # Add DankMaterialShell package
-              (wrapIntel dank-material-shell.packages.${system}.default "dms")
+              #(wrapIntel dank-material-shell.packages.${system}.default "dms")
               (wrapIntel quickshell "quickshell")
               (wrapIntel inkscape "inkscape")
-              #dank-material-shell.packages.${system}.quickshell
+              (wrapIntel dms-shell "dms")
               dgop # network monitor
               cava # audio visualization
               matugen # auto theme
@@ -120,9 +119,10 @@ EOF
 
               input-leap
 
-              chezmoi helix
+              chezmoi
               fish
               meson cmake
+              marksman
 
 
               # Provide nixGL binaries
