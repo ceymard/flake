@@ -68,61 +68,59 @@ EOF
             home.stateVersion = "26.05";
 
             home.packages = with pkgs; [
+
+              # To just have a somewhat recent version for those
               git
-              tmux
-              foot
-              fzf
-              jq
+              tmux # Terminal multiplexer
+              foot # Wayland terminal
+              fzf # Fuzzy finder, used by fish in ctrl+R
+              jq # JSON parsing
               curl
               wget
-              openssh
               gawk
               btop
-              uv
-              just
-              starship
-              fuzzel
-              (wrapIntel signal-desktop "signal-desktop")
+              uv # Python env management
+              just # Task runner
+              starship # Nice prompt machine
 
-              nodejs_24
               # Wrapped with nixGL
+              #(wrapIntel brave "brave")
+              #(wrapIntel microsoft-edge "microsoft-edge")
               (wrapIntel epiphany "epiphany")
+              (wrapIntel signal-desktop "signal-desktop")
               (wrapIntel ungoogled-chromium "chromium")
-              # niri
-              # (wrapIntel niri "niri")
-              #(wrapNvidia niri "niri")
-              #(wrapIntel alacritty "alacritty")
               (wrapIntel flameshot "flameshot")
               (wrapIntel grim "grim")
               (wrapIntel satty "satty")
               (wrapIntel slurp "slurp")
-              #(wrapIntel brave "brave")
-              #(wrapIntel microsoft-edge "microsoft-edge")
               firefox
+              goodvibes
               cursor-cli
-              (wrapIntel xwayland-satellite "xwayland-satellite") # compilé à la main finalement
-              xwayland
-                           
-              # Add DankMaterialShell package
-              #(wrapIntel dank-material-shell.packages.${system}.default "dms")
-              (wrapIntel quickshell "quickshell")
               (wrapIntel inkscape "inkscape")
+                           
+              # The following is for niri and dank material shell.
+              xwayland
               (wrapIntel dms-shell "dms")
-              dgop # network monitor
+              (wrapIntel xwayland-satellite "xwayland-satellite") # compilé à la main finalement
+              (wrapIntel quickshell "quickshell")
               cava # audio visualization
               matugen # auto theme
 
-              go rustc cargo tinygo
-              goodvibes
+              # General dev tools
+              fuzzel
+              go
+              nodejs_24
+              rustc
+              cargo
               pgcli
               ripgrep-all
               ripgrep
-
-              input-leap
+              meson
+              cmake
 
               chezmoi
-              fish
-              meson cmake
+
+              # LSP for markdown
               marksman
 
 
@@ -140,7 +138,6 @@ EOF
               enable = true;
             };
             
-
             home.sessionPath = [
               # optional
             ];
