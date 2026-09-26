@@ -82,6 +82,7 @@ EOF
               just
               starship
               fuzzel
+              (wrapIntel signal-desktop "signal-desktop")
 
               nodejs_24
               # Wrapped with nixGL
