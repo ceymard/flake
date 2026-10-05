@@ -4,10 +4,7 @@ set -euo pipefail
 export NIXPKGS_ALLOW_UNFREE=1
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-FLAKE="${SCRIPT_DIR}#u1214055"
-
 NIX=(nix --extra-experimental-features "nix-command flakes")
-HM=("${NIX[@]}" run home-manager/master --)
 
 # Pulled in by Home Manager modules, not listed in flake home.packages.
 HM_INTERNAL_PKGS=(
@@ -34,7 +31,7 @@ is_internal_pkg() {
   return 1
 }
 
-# pname -> version from a home-manager generation's home-path.
+# pname -> version from the active home-manager generation (already on disk).
 home_path_package_map() {
   local gen="$1"
   local hp pname version
@@ -54,6 +51,7 @@ home_path_package_map() {
           tail = if stripped == null then base else builtins.elemAt stripped 0;
           parsed = builtins.parseDrvName tail;
       in parsed.version")"
+    pname="$(normalize_pkg_key "${pname%-bin}")"
     is_internal_pkg "$pname" && continue
     printf '%s\t%s\n' "$pname" "$version"
   done < <(
@@ -63,29 +61,61 @@ home_path_package_map() {
   )
 }
 
+# pname -> version from flake evaluation only (no build, no profile switch).
+flake_package_map() {
+  "${NIX[@]}" eval --impure --json --expr "
+    let
+      flake = builtins.getFlake \"${SCRIPT_DIR}\";
+      user = builtins.getEnv \"USER\";
+      packages = flake.homeConfigurations.\${user}.config.home.packages;
+    in map (p:
+      let parsed = builtins.parseDrvName p.name;
+      in {
+        pname = p.pname or parsed.name;
+        version = p.version or parsed.version or \"unknown\";
+      }
+    ) packages
+  " | jq -r '.[] | [.pname, .version] | @tsv' | while IFS=$'\t' read -r pname version; do
+    pname="$(normalize_pkg_key "$pname")"
+    is_internal_pkg "$pname" && continue
+    printf '%s\t%s\n' "$pname" "$version"
+  done
+}
+
+normalize_pkg_key() {
+  local k="$1"
+  if [[ "$k" =~ ^python[0-9.]+-(.+)$ ]]; then
+    k="${BASH_REMATCH[1]}"
+  fi
+  case "$k" in
+    rustc-wrapper) k="rustc" ;;
+  esac
+  printf '%s' "$k"
+}
+
+normalize_version() {
+  local v="$1"
+  v="${v%-bin}"
+  [[ -z "$v" ]] && v="unknown"
+  printf '%s' "$v"
+}
+
 declare -A OLD_VER NEW_VER
 CURRENT="$(readlink -f "${HOME}/.local/state/nix/profiles/home-manager")"
-WORKDIR="$(mktemp -d)"
-trap 'rm -rf "$WORKDIR"' EXIT
 
 echo "Active generation: $CURRENT"
-echo "Building would-be generation from ${FLAKE} ..."
-cd "$WORKDIR"
-"${HM[@]}" build --extra-experimental-features "nix-command flakes" \
-  --flake "$FLAKE" --impure
-NEW="$(readlink -f "$WORKDIR/result")"
-echo "New generation:    $NEW"
+echo "Evaluating ${SCRIPT_DIR} (flake + lock, no build) ..."
 echo
 
 while IFS=$'\t' read -r pname version; do
-  OLD_VER["$pname"]="$version"
+  OLD_VER["$pname"]="$(normalize_version "$version")"
 done < <(home_path_package_map "$CURRENT")
 
 while IFS=$'\t' read -r pname version; do
-  NEW_VER["$pname"]="$version"
-done < <(home_path_package_map "$NEW")
+  NEW_VER["$pname"]="$(normalize_version "$version")"
+done < <(flake_package_map)
 
-echo "=== home.packages diff (profile-accessible, excluding HM internals) ==="
+echo "=== home.packages diff (active profile vs flake eval) ==="
 
 changed=0
 for pname in $(printf '%s\n' "${!OLD_VER[@]}" "${!NEW_VER[@]}" | sort -u); do
