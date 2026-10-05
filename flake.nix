@@ -42,17 +42,17 @@
           postBuild = ''
             for b in ${executables}; do
               mv "$out/bin/$b" "$out/bin/$b-real"
-              cat > "$out/bin/$b" <<EOF 
+              cat > "$out/bin/$b" <<EOF
 #!/usr/bin/env sh
 unset LD_LIBRARY_PATH # just in case
 exec ${nixGL}/bin/${nixGLExec} $out/bin/$b-real "\$@"
 EOF
             chmod +x "$out/bin/$b"
             done
-            
+
           '';
         };
-      
+
       wrapIntel = wrapWithNixGL nixGLPkgs.nixGLIntel;
       wrapNvidia = wrapWithNixGL nixGLPkgs.nixGLNvidia;
       username = builtins.getEnv "USER";
@@ -96,8 +96,9 @@ EOF
               firefox
               goodvibes
               cursor-cli
+              (wrapIntel onlyoffice-desktopeditors "onlyoffice-desktopeditors")
               (wrapIntel inkscape "inkscape")
-                           
+
               # The following is for niri and dank material shell.
               xwayland
               (wrapIntel dms-shell "dms")
@@ -122,6 +123,10 @@ EOF
 
               # LSP for markdown
               marksman
+              markdown-oxide
+
+              # A really nice scan utility
+              (wrapIntel kdePackages.skanpage "skanpage")
 
 
               # Provide nixGL binaries
@@ -137,11 +142,11 @@ EOF
             fonts.fontconfig = {
               enable = true;
             };
-            
+
             home.sessionPath = [
               # optional
             ];
-            
+
             home.activation.syncUserUnits = {
   after = [ "writeBoundary" ];
   before = [ "reloadSystemd" ];
@@ -168,4 +173,3 @@ EOF
       };
     };
 }
-

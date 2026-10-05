@@ -1,4 +1,5 @@
-#!/usr/bin/bash
-export NIXPKGS_ALLOW_UNFREE=1
-nix --extra-experimental-features "nix-command flakes" run home-manager/master -- switch --extra-experimental-features "nix-command flakes" --flake ~/nix#u1214055 --impure "$@"
-
+#!/bin/bash
+echo "Upgrading flake.lock"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+nix --extra-experimental-features "nix-command flakes" flake update --flake "$SCRIPT_DIR"
+echo "You can now run ./update.sh"
