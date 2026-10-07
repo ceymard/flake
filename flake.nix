@@ -95,7 +95,6 @@ EOF
               (wrapIntel slurp "slurp")
               firefox
               goodvibes
-              cursor-cli
               (wrapIntel onlyoffice-desktopeditors "onlyoffice-desktopeditors")
               (wrapIntel inkscape "inkscape")
 
