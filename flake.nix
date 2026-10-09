@@ -72,7 +72,6 @@ EOF
               # To just have a somewhat recent version for those
               git
               tmux # Terminal multiplexer
-              foot # Wayland terminal
               fzf # Fuzzy finder, used by fish in ctrl+R
               jq # JSON parsing
               curl
@@ -82,10 +81,13 @@ EOF
               uv # Python env management
               just # Task runner
               starship # Nice prompt machine
+              imagemagick
 
               # Wrapped with nixGL
               #(wrapIntel brave "brave")
               #(wrapIntel microsoft-edge "microsoft-edge")
+              (wrapIntel alacritty "alacritty")
+              foot # Wayland terminal
               (wrapIntel epiphany "epiphany")
               (wrapIntel signal-desktop "signal-desktop")
               (wrapIntel ungoogled-chromium "chromium")
@@ -105,6 +107,7 @@ EOF
               (wrapIntel quickshell "quickshell")
               cava # audio visualization
               matugen # auto theme
+              xournalpp
 
               # General dev tools
               fuzzel
@@ -123,6 +126,9 @@ EOF
               # LSP for markdown
               marksman
               markdown-oxide
+
+              # to test fleet bundles
+              fleet
 
               # A really nice scan utility
               (wrapIntel kdePackages.skanpage "skanpage")
