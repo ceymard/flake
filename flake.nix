@@ -73,6 +73,7 @@ EOF
               git
               tmux # Terminal multiplexer
               fzf # Fuzzy finder, used by fish in ctrl+R
+              fd # alternative to find
               jq # JSON parsing
               curl
               wget
@@ -120,6 +121,9 @@ EOF
               ripgrep
               meson
               cmake
+              yazi
+
+              neovim
 
               chezmoi
 
