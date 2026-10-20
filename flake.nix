@@ -91,7 +91,7 @@ EOF
               foot # Wayland terminal
               (wrapIntel epiphany "epiphany")
               (wrapIntel signal-desktop "signal-desktop")
-              (wrapIntel ungoogled-chromium "chromium")
+              (wrapIntel chromium "chromium")
               (wrapIntel flameshot "flameshot")
               (wrapIntel grim "grim")
               (wrapIntel satty "satty")
@@ -112,7 +112,7 @@ EOF
 
               # General dev tools
               fuzzel
-              go
+              go_1_27
               nodejs_24
               rustc
               cargo
@@ -141,6 +141,7 @@ EOF
               # Provide nixGL binaries
               nixGLPkgs.nixGLIntel
               nixGLPkgs.nixVulkanIntel
+
               #nixGLPkgs.nixGLNvidia
               #nixGLPkgs.nixVulkanNvidia
             ];
