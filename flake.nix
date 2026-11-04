@@ -20,13 +20,30 @@
     let
       system = "x86_64-linux";
 
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-        #overlays = [nixgl.overlay];
+      # nixGL still references pkgs.pcre in its checkPhase; nixpkgs removed pcre (EOL).
+      pcreShimOverlay = final: prev: {
+        pcre = prev.runCommand "pcre-shim-for-nixgl" {
+          nativeBuildInputs = [ prev.makeWrapper ];
+        } ''
+          mkdir -p $out/bin
+          makeWrapper ${prev.pcre2}/bin/pcre2grep $out/bin/pcregrep
+        '';
       };
 
-      nixGLPkgs = nixgl.packages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        config = {
+          allowUnfree = true;
+          # Added for only office
+          problems.handlers."gtk+".broken = "warn";
+        };
+        overlays = [
+          pcreShimOverlay
+          nixgl.overlays.default
+        ];
+      };
+
+      nixGLPkgs = pkgs.nixgl;
 
       # Correct wrapper for nix-community/nixGL
       wrapWithNixGL = nixGL: pkg: executables:
@@ -111,6 +128,7 @@ EOF
               xournalpp
 
               # General dev tools
+              mosh
               fuzzel
               go_1_27
               nodejs_24
@@ -122,8 +140,9 @@ EOF
               meson
               cmake
               yazi
+              sqlite
 
-              neovim
+              proxychains-ng
 
               chezmoi
 
