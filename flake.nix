@@ -113,7 +113,7 @@ EOF
               (wrapIntel grim "grim")
               (wrapIntel satty "satty")
               (wrapIntel slurp "slurp")
-              firefox
+              (wrapIntel firefox "firefox")
               goodvibes
               (wrapIntel onlyoffice-desktopeditors "onlyoffice-desktopeditors")
               (wrapIntel inkscape "inkscape")
